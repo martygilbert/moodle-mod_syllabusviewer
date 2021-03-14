@@ -15,18 +15,20 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * observers for mod_syllabusviewer
  *
  * @package     mod_syllabusviewer
  * @copyright   2021 Marty Gilbert <martygilbert@gmail>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021031300;
-$plugin->component = 'mod_syllabusviewer';
-//$plugin->release = '0.1.0';
-$plugin->requires = 2020061500;
-$plugin->dependencies = array('mod_syllabus' => 2021030100);
-$plugin->maturity = MATURITY_ALPHA;
+$observers = array(
+    array(
+        'eventname' => '\mod_syllabus\event\course_module_updated',
+        'callback' =>  'mod_syllabusviewer_observer::syllabus_updated',
+    ),
+);
+
