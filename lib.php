@@ -57,6 +57,20 @@ function syllabusviewer_add_instance($moduleinstance, $mform = null) {
 
     $id = $DB->insert_record('syllabusviewer', $moduleinstance);
 
+    // Trigger the load_syllabi_initial task.
+    $modcon = context_module::instance($moduleinstance->coursemodule);
+    //error_log(print_r($moduleinstance, true));
+    //error_log("ID is $id");
+    $loadsyllabi = new \mod_syllabusviewer\task\load_syllabi_initial();
+    $loadsyllabi->set_custom_data(array(
+       'contextid'  => $modcon->id,
+       'catid'      => $moduleinstance->categoryid,
+       'cmid'       => $moduleinstance->coursemodule,
+    ));
+
+    error_log ("About to trigger task load_syllabi_initial");
+    \core\task\manager::queue_adhoc_task($loadsyllabi);
+
     return $id;
 }
 

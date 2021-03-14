@@ -63,6 +63,19 @@ $PAGE->set_context($modulecontext);
 
 echo $OUTPUT->header();
 
+// MJG STARTING HERE.
+
+error_log(print_r($cm,true));
+
+$sventries = $DB->get_records('syllabusviewer_entries', array('cmid' => $cm->id));
+
+echo "<table border=1 style=\"width: 100%\"><tr><th>cmid</th><th>course</th><th>filepath</th></tr>\n";
+foreach ($sventries as $entry) {
+    echo '<tr><td>'.$entry->cmid.'</td><td>'.$entry->courseid.'</td><td>'.$entry->filepath.'</td></tr>'."\n"; 
+}
+echo "</table>";
+
+/*
 $catid = 1; // This should be loaded from when the viewer was created.
 $coursecat = core_course_category::get($catid);
 $courses = $coursecat->get_courses(array('recursive' => true, 'idonly' => true));
@@ -116,5 +129,7 @@ foreach ($courses as $cid) {
     
 }
 
+*/
+// MJG ENDING HERE.
 
 echo $OUTPUT->footer();
