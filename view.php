@@ -61,7 +61,12 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-echo $OUTPUT->header();
+$output = $PAGE->get_renderer('mod_syllabusviewer');
+//echo $OUTPUT->header();
+echo $output->header();
+echo $output->heading("This is my Page - output/heading");
+$renderable = new \mod_syllabusviewer\output\index_page('This is my some text');
+echo $output->render($renderable);
 
 // MJG STARTING HERE.
 
@@ -74,6 +79,9 @@ foreach ($sventries as $entry) {
     echo '<tr><td>'.$entry->cmid.'</td><td>'.$entry->courseid.'</td><td>'.$entry->filepath.'</td></tr>'."\n"; 
 }
 echo "</table>";
+
+
+
 
 /*
 $catid = 1; // This should be loaded from when the viewer was created.
@@ -130,6 +138,8 @@ foreach ($courses as $cid) {
 }
 
 */
-// MJG ENDING HERE.
 
-echo $OUTPUT->footer();
+$DB->get_fieldset_sql($stuff, $stuff2);
+
+//echo $OUTPUT->footer();
+echo $output->footer();
