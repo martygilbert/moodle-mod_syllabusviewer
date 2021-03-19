@@ -109,5 +109,7 @@ function syllabusviewer_delete_instance($id) {
 
     $DB->delete_records('syllabusviewer', array('id' => $id));
 
+    // TODO Delete the entries (and files?) in syllabusviewer_entries
+
     return true;
 }

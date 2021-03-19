@@ -91,15 +91,18 @@ class load_syllabi_initial extends \core\task\adhoc_task {
 
                 foreach ($files as $file) {
 
+                    // FIXME Maybe don't call create_file_from_storedfile if it exists.
+                    // FIXME Maybe just add it to _entries.
                     if (!$fs->file_exists($data['contextid'], 'mod_syllabusviewer',
                         'content', 0, '/', $file->get_filename())) {
+
                         $newfile = $fs->create_file_from_storedfile($file_record, $file);
                         $toinsert->filepath = $file->get_pathnamehash();
                         $toinsert->timemodified = $file->get_timemodified();
 
                         $DB->insert_record('syllabusviewer_entries', $toinsert);
                     } else {
-                        error_log("File already exists in syllabusviewer. Not copying.");
+                        mtrace("File already exists in syllabusviewer. Not copying.");
                     }
                 }
                     

@@ -139,7 +139,5 @@ foreach ($courses as $cid) {
 
 */
 
-$DB->get_fieldset_sql($stuff, $stuff2);
-
 //echo $OUTPUT->footer();
 echo $output->footer();

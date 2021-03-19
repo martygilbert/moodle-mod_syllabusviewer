@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021031300;
+$plugin->version = 2021031900;
 $plugin->component = 'mod_syllabusviewer';
 //$plugin->release = '0.1.0';
 $plugin->requires = 2020061500;
