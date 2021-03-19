@@ -70,8 +70,9 @@ echo $output->render($renderable);
 
 // MJG STARTING HERE.
 
-error_log(print_r($cm,true));
+//error_log(print_r($cm,true));
 
+/*
 $sventries = $DB->get_records('syllabusviewer_entries', array('cmid' => $cm->id));
 
 echo "<table border=1 style=\"width: 100%\"><tr><th>cmid</th><th>course</th><th>filepath</th></tr>\n";
@@ -79,6 +80,7 @@ foreach ($sventries as $entry) {
     echo '<tr><td>'.$entry->cmid.'</td><td>'.$entry->courseid.'</td><td>'.$entry->filepath.'</td></tr>'."\n"; 
 }
 echo "</table>";
+*/
 
 
 

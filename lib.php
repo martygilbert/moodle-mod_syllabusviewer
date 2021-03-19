@@ -68,7 +68,7 @@ function syllabusviewer_add_instance($moduleinstance, $mform = null) {
        'cmid'       => $moduleinstance->coursemodule,
     ));
 
-    error_log ("About to trigger task load_syllabi_initial");
+    //error_log ("About to trigger task load_syllabi_initial");
     \core\task\manager::queue_adhoc_task($loadsyllabi);
 
     return $id;
