@@ -25,9 +25,9 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The course_module id of the syllabus viewer"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The id of the course where this file is found."/>
-        <FIELD NAME="syllabusid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The id of the related syllabus activity."/>
-        <FIELD NAME="filepath" TYPE="char" LENGTH="45" NOTNULL="true" SEQUENCE="false" COMMENT="The file pathname hash from the files table."/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The epoch time of the last update of this file."/>
+        <FIELD NAME="syllabusid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The id of the related syllabus activity."/>
+        <FIELD NAME="filepath" TYPE="char" LENGTH="45" NOTNULL="false" SEQUENCE="false" COMMENT="The file pathname hash from the files table."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The epoch time of the last update of this file."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

@@ -81,6 +81,12 @@ class load_syllabi_initial extends \core\task\adhoc_task {
             $course = get_course($cid);
             $syllabi = get_all_instances_in_course('syllabus', $course, null, true);
 
+            if (count($syllabi) == 0) {
+                // No Syllabus Resource. We should add an entry that has no file information.
+                $DB->insert_record('syllabusviewer_entries', $toinsert);
+                continue;
+            }
+
             foreach ($syllabi as $syllabus) {
                 $toinsert->syllabusid = $syllabus->id;
 
@@ -88,6 +94,7 @@ class load_syllabi_initial extends \core\task\adhoc_task {
 
                 $files = $fs->get_area_files($modcon->id, 'mod_syllabus', 'content', 0,
                     'sortorder DESC, id ASC', false);
+
 
                 foreach ($files as $file) {
 
@@ -106,5 +113,4 @@ class load_syllabi_initial extends \core\task\adhoc_task {
         }
         
     }
-
 }

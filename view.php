@@ -65,15 +65,15 @@ $output = $PAGE->get_renderer('mod_syllabusviewer');
 //echo $OUTPUT->header();
 echo $output->header();
 echo $output->heading("This is my Page - output/heading");
-$renderable = new \mod_syllabusviewer\output\index_page('This is my some text');
+$renderable = new \mod_syllabusviewer\output\index_page($cm->instance, $cm->id);
 echo $output->render($renderable);
 
 // MJG STARTING HERE.
 
+/*
 error_log(print_r($cm,true));
 
 
-/*
 $sventries = $DB->get_records('syllabusviewer_entries', array('cmid' => $cm->id));
 
 echo "<table border=1 style=\"width: 100%\"><tr><th>cmid</th><th>course</th><th>filepath</th></tr>\n";
