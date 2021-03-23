@@ -108,6 +108,8 @@ class load_syllabi_initial extends \core\task\adhoc_task {
 
                     $DB->insert_record('syllabusviewer_entries', $toinsert);
                 }
+                unset($toinsert->filepath);
+                unset($toisnert->timemodified);
                     
             }
         }
