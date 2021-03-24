@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Library of interface functions and constants.
@@ -59,8 +59,6 @@ function syllabusviewer_add_instance($moduleinstance, $mform = null) {
 
     // Trigger the load_syllabi_initial task.
     $modcon = context_module::instance($moduleinstance->coursemodule);
-    //error_log(print_r($moduleinstance, true));
-    //error_log("ID is $id");
     $loadsyllabi = new \mod_syllabusviewer\task\load_syllabi_initial();
     $loadsyllabi->set_custom_data(array(
        'contextid'  => $modcon->id,
@@ -68,7 +66,6 @@ function syllabusviewer_add_instance($moduleinstance, $mform = null) {
        'cmid'       => $moduleinstance->coursemodule,
     ));
 
-    //error_log ("About to trigger task load_syllabi_initial");
     \core\task\manager::queue_adhoc_task($loadsyllabi);
 
     return $id;
@@ -107,10 +104,11 @@ function syllabusviewer_delete_instance($id) {
         return false;
     }
 
+    // Files are deleted automagically from mdl_files (should probably verify this: Issue #4).
+    list($course, $cm) = get_course_and_cm_from_instance($id, 'syllabusviewer');
+
+    $DB->delete_records('syllabusviewer_entries', array('cmid' => $cm->id));
     $DB->delete_records('syllabusviewer', array('id' => $id));
-
-    // TODO Delete the entries (and files?) in syllabusviewer_entries
-
     return true;
 }
 /**
@@ -130,43 +128,44 @@ function syllabusviewer_pluginfile($course, $cm, $context, $filearea, $args, $fo
     // Adapted from https://docs.moodle.org/dev/File_API#Serving_files_to_users
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
     if ($context->contextlevel != CONTEXT_MODULE) {
-        return false; 
+        return false;
     }
- 
+
     // Make sure the filearea is one of those used by the plugin.
     if ($filearea !== 'mod_syllabusviewer') {
         return false;
     }
- 
-    // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
+
+    // Make sure the user is logged in and has access to the module
+    // (plugins that are not course modules should leave out the 'cm' part).
     require_login($course, true, $cm);
- 
+
     // Check the relevant capabilities - these may vary depending on the filearea being accessed.
     if (!has_capability('mod/syllabusviewer:view', $context)) {
         return false;
     }
- 
+
     // Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
     $itemid = array_shift($args); // The first item in the $args array.
- 
+
     // Use the itemid to retrieve any relevant data records and perform any security checks to see if the
     // user really does have access to the file in question.
- 
+
     // Extract the filename / filepath from the $args array.
     $filename = array_pop($args); // The last item in the $args array.
     if (!$args) {
-        $filepath = '/'; // $args is empty => the path is '/'
+        $filepath = '/'; // If $args is empty => the path is '/'.
     } else {
-        $filepath = '/'.implode('/', $args).'/'; // $args contains elements of the filepath
+        $filepath = '/'.implode('/', $args).'/'; // If $args contains elements of the filepath.
     }
- 
+
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
     $file = $fs->get_file($context->id, 'mod_syllabusviewer', $filearea, $itemid, $filepath, $filename);
     if (!$file) {
         return false; // The file does not exist.
     }
- 
-    // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering. 
+
+    // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
     send_stored_file($file, 86400, 0, $forcedownload, $options);
 }
