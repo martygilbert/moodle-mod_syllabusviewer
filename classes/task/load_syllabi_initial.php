@@ -110,6 +110,7 @@ class load_syllabi_initial extends \core\task\adhoc_task {
                 }
                 unset($toinsert->filepath);
                 unset($toisnert->timemodified);
+                unset($toinsert->syllabusid);
                     
             }
         }
