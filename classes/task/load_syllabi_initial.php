@@ -44,37 +44,32 @@ class load_syllabi_initial extends \core\task\adhoc_task {
      */
     public function execute() {
         global $DB;
-        
-        // mtrace ("in the load_syllabi_initial adhoc task");
-        // What do we require? 
-        // categoryID
-        // the contextid
+
         $data = (array)$this->get_custom_data();
 
-        if (empty($this->get_custom_data()) || 
-            !isset($data['catid']) || 
-            !isset($data['cmid']) || 
+        if (empty($this->get_custom_data()) ||
+            !isset($data['catid']) ||
+            !isset($data['cmid']) ||
             !isset($data['contextid'])) {
-            
+
             // Must have catid and contextid.
             return;
         }
 
         // Go through all of the courses for this instance of syllabusviewer.
         // Copy the meta data into mod_syllabusviewer_entries table.
-        //  Can I get bay with just storing the cmid? That gives me course and syllabus id.
-        // Copy the file to the mod_syllabusviewer area
+        // Can I get by with just storing the cmid? That gives me course and syllabus id.
+        // Copy the file to the mod_syllabusviewer area.
 
         $coursecat = \core_course_category::get($data['catid']);
         $courses = $coursecat->get_courses(array('recursive' => true, 'idonly' => true));
 
-
         $fs = get_file_storage();
-        $file_record = array('contextid' => $data['contextid'], 'component' => 'mod_syllabusviewer', 'fileare' => 'content');
+        $filerec = array('contextid' => $data['contextid'], 'component' => 'mod_syllabusviewer', 'fileare' => 'content');
 
         $toinsert = new \stdClass();
         $toinsert->cmid = $data['cmid'];
-        
+
         foreach ($courses as $cid) {
             $toinsert->courseid = $cid;
 
@@ -95,27 +90,29 @@ class load_syllabi_initial extends \core\task\adhoc_task {
                 $files = $fs->get_area_files($modcon->id, 'mod_syllabus', 'content', 0,
                     'sortorder DESC, id ASC', false);
 
-
                 foreach ($files as $file) {
 
                     // Only call create_file_from_storedfile if it doesn't exist.
                     if (!$fs->file_exists($data['contextid'], 'mod_syllabusviewer',
                         'content', 0, '/', $file->get_filename())) {
-                        $newfile = $fs->create_file_from_storedfile($file_record, $file);
+                        $newfile = $fs->create_file_from_storedfile($filerec, $file);
+                        $toinsert->filepath = $newfile->get_pathnamehash();
+                        $toinsert->timemodified = $newfile->get_timemodified();
+                    } else {
+                        $newfile = $fs->get_file($data['contextid'], 'mod_syllabusviewer',
+                            'content', 0, '/', $file->get_filename());
+                        $toinsert->filepath = $newfile->get_pathnamehash();
+                        $toinsert->timemodified = $newfile->get_timemodified();
                     }
-                    $toinsert->filepath = $file->get_pathnamehash();
-                    $toinsert->timemodified = $file->get_timemodified();
-
                     $DB->insert_record('syllabusviewer_entries', $toinsert);
                 }
+
                 unset($toinsert->filepath);
                 unset($toisnert->timemodified);
                 unset($toinsert->syllabusid);
                 unset($toinsert->timemodified);
                 unset($toinsert->filepath);
-                    
             }
         }
-        
     }
 }

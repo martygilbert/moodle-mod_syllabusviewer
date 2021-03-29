@@ -26,10 +26,22 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/mod/syllabusviewer/locallib.php');
+
 class mod_syllabusviewer_observer {
 
     public static function syllabus_updated(\mod_syllabus\event\course_module_updated $event) {
         error_log(print_r($event, true));
-        error_log("IN THE OBSERVER!!! SV variety");
+        error_log("IN THE OBSERVER!!! SV - UPDATE - variety");
+    }
+
+    public static function syllabus_deleted(\mod_syllabus\event\course_module_deleted $event) {
+        global $DB;
+
+        $data = $event->get_data();
+
+        $syllabusid = $data['other']['syllabusid'];
+        
+        delete_syllabus($syllabusid);
     }
 }

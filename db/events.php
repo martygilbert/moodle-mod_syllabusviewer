@@ -30,5 +30,9 @@ $observers = array(
         'eventname' => '\mod_syllabus\event\course_module_updated',
         'callback' =>  'mod_syllabusviewer_observer::syllabus_updated',
     ),
+    array(
+        'eventname' => '\mod_syllabus\event\course_module_deleted',
+        'callback' =>  'mod_syllabusviewer_observer::syllabus_deleted',
+    ),
 );
 
