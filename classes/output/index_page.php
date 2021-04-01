@@ -83,9 +83,9 @@ class index_page implements renderable, templatable {
             // Add the files.
             $course->files = array();
             foreach ($entries as $idx => $entry) {
-                if ($entry->courseid == $sname->id && !is_null($entry->filepath)) {
+                if ($entry->courseid == $sname->id && !is_null($entry->pathnamehash)) {
                     $files = array();
-                    $file = $fs->get_file_by_hash($entry->filepath);
+                    $file = $fs->get_file_by_hash($entry->pathnamehash);
 
                     $files['name'] = $file->get_filename();
                     $files['link'] = \moodle_url::make_pluginfile_url($file->get_contextid(),

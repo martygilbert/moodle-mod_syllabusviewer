@@ -96,22 +96,21 @@ class load_syllabi_initial extends \core\task\adhoc_task {
                     if (!$fs->file_exists($data['contextid'], 'mod_syllabusviewer',
                         'content', 0, '/', $file->get_filename())) {
                         $newfile = $fs->create_file_from_storedfile($filerec, $file);
-                        $toinsert->filepath = $newfile->get_pathnamehash();
+                        $toinsert->pathnamehash = $newfile->get_pathnamehash();
                         $toinsert->timemodified = $newfile->get_timemodified();
                     } else {
                         $newfile = $fs->get_file($data['contextid'], 'mod_syllabusviewer',
                             'content', 0, '/', $file->get_filename());
-                        $toinsert->filepath = $newfile->get_pathnamehash();
+                        $toinsert->pathnamehash = $newfile->get_pathnamehash();
                         $toinsert->timemodified = $newfile->get_timemodified();
                     }
                     $DB->insert_record('syllabusviewer_entries', $toinsert);
                 }
 
-                unset($toinsert->filepath);
+                unset($toinsert->pathnamehash);
                 unset($toisnert->timemodified);
                 unset($toinsert->syllabusid);
                 unset($toinsert->timemodified);
-                unset($toinsert->filepath);
             }
         }
     }

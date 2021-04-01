@@ -123,7 +123,7 @@ function syllabusviewer_delete_instance($id) {
  * @param array $options additional options affecting the file serving
  * @return bool false if the file not found, just send the file otherwise and do not return anything
  */
-function syllabusviewer_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
+function syllabusviewer_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, $options) {
 
     // Adapted from https://docs.moodle.org/dev/File_API#Serving_files_to_users
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
@@ -132,7 +132,7 @@ function syllabusviewer_pluginfile($course, $cm, $context, $filearea, $args, $fo
     }
 
     // Make sure the filearea is one of those used by the plugin.
-    if ($filearea !== 'mod_syllabusviewer') {
+    if ($filearea !== 'content') {
         return false;
     }
 
@@ -162,6 +162,7 @@ function syllabusviewer_pluginfile($course, $cm, $context, $filearea, $args, $fo
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
     $file = $fs->get_file($context->id, 'mod_syllabusviewer', $filearea, $itemid, $filepath, $filename);
+    error_log(print_r($file, true));
     if (!$file) {
         return false; // The file does not exist.
     }

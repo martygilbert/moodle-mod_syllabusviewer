@@ -44,19 +44,19 @@ function delete_syllabus($syllabusid) {
 
     // Delete the associated files, if any.
     foreach ($entries as $thisentry) {
-        if (!is_null($thisentry->filepath)) {
+        if (!is_null($thisentry->pathnamehash)) {
 
-            // Count with this filepath should == 0 to proceed with file deletion.
-            $num = $DB->count_records('syllabusviewer_entries', array('filepath' => $thisentry->filepath));
+            // Count with this pathnamehash should == 0 to proceed with file deletion.
+            $num = $DB->count_records('syllabusviewer_entries', array('pathnamehash' => $thisentry->pathnamehash));
             if ($num > 0) {
                 continue;
             }
 
             $fs = get_file_storage();
-            $file = $fs->get_file_by_hash($thisentry->filepath);
+            $file = $fs->get_file_by_hash($thisentry->pathnamehash);
             if ($file) {
                 if (!$file->delete()) {
-                    mtrace ("Error deleting file with pathnamehash $thisentry->filepath");
+                    mtrace ("Error deleting file with pathnamehash $thisentry->pathnamehash");
                 }
             }
         }
@@ -71,7 +71,7 @@ function delete_syllabus($syllabusid) {
     if ($numleft == 0) {
         unset($thisentry->id);
         unset($thisentry->syllabusid);
-        unset($thisentry->filepath);
+        unset($thisentry->pathnamehash);
         unset($thisentry->timemodified);
 
         $DB->insert_record('syllabusviewer_entries', $thisentry);
