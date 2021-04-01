@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Plugin version and other meta-data are defined here.
@@ -26,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2021040100;
 $plugin->component = 'mod_syllabusviewer';
-//$plugin->release = '0.1.0';
 $plugin->requires = 2020061500;
 $plugin->dependencies = array('mod_syllabus' => 2021030100);
 $plugin->maturity = MATURITY_ALPHA;

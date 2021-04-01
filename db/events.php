@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * observers for mod_syllabusviewer
@@ -28,11 +28,10 @@ defined('MOODLE_INTERNAL') || die();
 $observers = array(
     array(
         'eventname' => '\mod_syllabus\event\course_module_updated',
-        'callback' =>  'mod_syllabusviewer_observer::syllabus_updated',
+        'callback' => 'mod_syllabusviewer_observer::syllabus_updated',
     ),
     array(
         'eventname' => '\mod_syllabus\event\course_module_deleted',
-        'callback' =>  'mod_syllabusviewer_observer::syllabus_deleted',
+        'callback' => 'mod_syllabusviewer_observer::syllabus_deleted',
     ),
 );
-

@@ -162,7 +162,6 @@ function syllabusviewer_pluginfile($course, $cm, $context, $filearea, $args, $fo
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
     $file = $fs->get_file($context->id, 'mod_syllabusviewer', $filearea, $itemid, $filepath, $filename);
-    error_log(print_r($file, true));
     if (!$file) {
         return false; // The file does not exist.
     }

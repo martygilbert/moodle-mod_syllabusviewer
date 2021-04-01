@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Plugin upgrade steps are defined here.
@@ -41,7 +41,7 @@ function xmldb_syllabusviewer_upgrade($oldversion) {
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
     // Documentation for the XMLDB Editor can be found at:
-    // https://docs.moodle.org/dev/XMLDB_editor
+    // https://docs.moodle.org/dev/XMLDB_editor .
 
     return true;
 }

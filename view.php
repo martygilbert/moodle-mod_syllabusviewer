@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Prints an instance of mod_syllabusviewer.
@@ -25,7 +25,7 @@
 require(__DIR__.'/../../config.php');
 require_once(__DIR__.'/lib.php');
 
-// Course_module ID, or
+// Course_module ID, or...
 $id = optional_param('id', 0, PARAM_INT);
 
 // ... module instance id.
@@ -62,7 +62,6 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 $output = $PAGE->get_renderer('mod_syllabusviewer');
-//echo $OUTPUT->header();
 echo $output->header();
 echo $output->heading("This is my Page - output/heading");
 $renderable = new \mod_syllabusviewer\output\index_page($cm->instance, $cm->id);

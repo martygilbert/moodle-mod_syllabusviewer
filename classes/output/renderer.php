@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * output renderer for mod_syllabusviewer
@@ -30,7 +30,7 @@ defined ('MOODLE_INTERNAL') || die;
 use plugin_renderer_base;
 
 class renderer extends plugin_renderer_base {
-    
+
     public function render_index_page($page) {
         $data = $page->export_for_template($this);
         return parent::render_from_template('mod_syllabusviewer/index_page', $data);

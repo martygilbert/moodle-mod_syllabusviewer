@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * The main mod_syllabusviewer configuration form.
@@ -70,26 +70,15 @@ class mod_syllabusviewer_mod_form extends moodleform_mod {
         // Get the categories for a dropdown.
         global $DB;
         $categories = $DB->get_records('course_categories', null, '', 'id');
-        //error_log(print_r($categories, true));
 
         $options = array();
         $options[0] = 'Entire site';
         foreach ($categories as $cat) {
             $category = core_course_category::get($cat->id);
-            
             $options[$cat->id] = $category->get_nested_name(false);
         }
 
         $mform->addElement('select', 'categoryid', get_string('categoryid_desc', 'mod_syllabusviewer'), $options);
-
-        //$mform->addElement('text', 'categoryid', get_string('categoryid_desc', 'mod_syllabusviewer'), array('size' => '64'));
-        //$mform->setType('categoryid', PARAM_INT);
-        //$mform->addRule('categoryid', get_string('mustbenumber', 'syllabusviewer'), 'numeric');
-
-        // Adding the rest of mod_syllabusviewer settings, spreading all them into this fieldset
-        // ... or adding more fieldsets ('header' elements) if needed for better logic.
-        //$mform->addElement('static', 'label1', 'syllabusviewersettings', get_string('syllabusviewersettings', 'mod_syllabusviewer'));
-        //$mform->addElement('header', 'syllabusviewerfieldset', get_string('syllabusviewerfieldset', 'mod_syllabusviewer'));
 
         // Add standard elements.
         $this->standard_coursemodule_elements();
