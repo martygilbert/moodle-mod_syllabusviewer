@@ -32,6 +32,27 @@ class mod_syllabusviewer_observer {
     public static function syllabus_updated(\mod_syllabus\event\course_module_updated $event) {
     }
 
+    public static function syllabus_added(\mod_syllabus\event\course_module_added $event) {
+        global $DB;
+        
+        // How do I know my CMID? I need it for the sv_entries table.
+
+        error_log(print_r($event, true));
+
+        $data = $event->get_data();
+
+        $syllabusid = $data['other']['syllabusid'];
+        $syllabuscmid = $data['other']['cmid'];
+
+        $toinsert = new stdClass();
+        $toinsert->syllabusid = $syllabusid;
+
+
+
+        
+        //delete_syllabus($syllabusid);
+    }
+
     public static function syllabus_deleted(\mod_syllabus\event\course_module_deleted $event) {
         global $DB;
 
