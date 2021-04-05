@@ -65,7 +65,7 @@ class load_syllabi_initial extends \core\task\adhoc_task {
         $courses = $coursecat->get_courses(array('recursive' => true, 'idonly' => true));
 
         $fs = get_file_storage();
-        $filerec = array('contextid' => $data['contextid'], 'component' => 'mod_syllabusviewer', 'fileare' => 'content');
+        $filerec = array('contextid' => $data['contextid'], 'component' => 'mod_syllabusviewer', 'filearea' => 'content');
 
         $toinsert = new \stdClass();
         $toinsert->cmid = $data['cmid'];
