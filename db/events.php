@@ -36,6 +36,6 @@ $observers = array(
     ),
     array(
         'eventname' => '\mod_syllabus\event\course_module_added',
-        'callback' =>  'mod_syllabusviewer_observer::syllabus_added',
+        'callback' => 'mod_syllabusviewer_observer::syllabus_added',
     ),
 );

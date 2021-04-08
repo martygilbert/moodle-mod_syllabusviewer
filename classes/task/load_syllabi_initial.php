@@ -26,6 +26,7 @@
 namespace mod_syllabusviewer\task;
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot.'/mod/syllabusviewer/locallib.php');
 
 /**
  * Adhoc task that will initally load the existing syllabi for this viewer
@@ -38,9 +39,8 @@ class load_syllabi_initial extends \core\task\adhoc_task {
 
 
     /**
-     * Run the task to populate word and character counts on existing forum posts.
-     * If the maximum number of records are updated, the task re-queues itself,
-     * as there may be more records to process.
+     * Run the task to load all of the syllabus files from the
+     * specified category into the syllabusviewer file area.
      */
     public function execute() {
         global $DB;
@@ -51,10 +51,12 @@ class load_syllabi_initial extends \core\task\adhoc_task {
             !isset($data['catid']) ||
             !isset($data['cmid']) ||
             !isset($data['contextid'])) {
-
             // Must have catid and contextid.
             return;
         }
+
+        // Clear any remnants in the sv_entries table. Shouldn't exist.
+        $DB->delete_records('syllabusviewer_entries', array('cmid' => $data['cmid']));
 
         // Go through all of the courses for this instance of syllabusviewer.
         // Copy the meta data into mod_syllabusviewer_entries table.
@@ -63,9 +65,6 @@ class load_syllabi_initial extends \core\task\adhoc_task {
 
         $coursecat = \core_course_category::get($data['catid']);
         $courses = $coursecat->get_courses(array('recursive' => true, 'idonly' => true));
-
-        $fs = get_file_storage();
-        $filerec = array('contextid' => $data['contextid'], 'component' => 'mod_syllabusviewer', 'filearea' => 'content');
 
         $toinsert = new \stdClass();
         $toinsert->cmid = $data['cmid'];
@@ -83,34 +82,8 @@ class load_syllabi_initial extends \core\task\adhoc_task {
             }
 
             foreach ($syllabi as $syllabus) {
-                $toinsert->syllabusid = $syllabus->id;
-
-                $modcon = \context_module::instance($syllabus->coursemodule);
-
-                $files = $fs->get_area_files($modcon->id, 'mod_syllabus', 'content', 0,
-                    'sortorder DESC, id ASC', false);
-
-                foreach ($files as $file) {
-
-                    // Only call create_file_from_storedfile if it doesn't exist.
-                    if (!$fs->file_exists($data['contextid'], 'mod_syllabusviewer',
-                        'content', 0, '/', $file->get_filename())) {
-                        $newfile = $fs->create_file_from_storedfile($filerec, $file);
-                        $toinsert->pathnamehash = $newfile->get_pathnamehash();
-                        $toinsert->timemodified = $newfile->get_timemodified();
-                    } else {
-                        $newfile = $fs->get_file($data['contextid'], 'mod_syllabusviewer',
-                            'content', 0, '/', $file->get_filename());
-                        $toinsert->pathnamehash = $newfile->get_pathnamehash();
-                        $toinsert->timemodified = $newfile->get_timemodified();
-                    }
-                    $DB->insert_record('syllabusviewer_entries', $toinsert);
-                }
-
-                unset($toinsert->pathnamehash);
-                unset($toisnert->timemodified);
-                unset($toinsert->syllabusid);
-                unset($toinsert->timemodified);
+                add_syllabus_files_to_viewer($syllabus->coursemodule, $data['cmid'],
+                    0, $syllabus->id, $data['contextid']);
             }
         }
     }

@@ -77,3 +77,102 @@ function delete_syllabus($syllabusid) {
         $DB->insert_record('syllabusviewer_entries', $thisentry);
     }
 }
+
+
+/**
+ * syllabusid instanceid of the syllabus activity
+ * syllabuscmid cmid of the syllabus
+ */
+function add_syllabus_entry($syllabuscmid) {
+    global $DB;
+
+    $thismod = $DB->get_record('course_modules', array('id' => $syllabuscmid));
+    $syllabusid = $thismod->instance;
+    $courseid = $thismod->course;
+
+    $course = $DB->get_record('course_modules', array('id' => $syllabuscmid), 'id, course', MUST_EXIST);
+    $entries = $DB->get_records('syllabusviewer_entries', array('courseid' => $courseid));
+
+    if ($entries) {
+        foreach ($entries as $entry) {
+            $cm = $DB->get_record('course_modules', array('id' => $entry->cmid), '*', MUST_EXIST);
+            $coursecon = \context_course::instance($cm->course);
+            $viewercon = \context_module::instance($entry->cmid);
+
+            if (is_null($entry->syllabusid)) {
+                $DB->delete_records('syllabusviewer_entries', array('id' => $entry->id));
+            }
+
+            add_syllabus_files_to_viewer($syllabuscmid, $entry->cmid, $coursecon, $syllabusid, $viewercon);
+        }
+    }
+
+}
+
+function add_syllabus_files_to_viewer($syllabuscmid, $viewercmid, $viewercourseconorid = 0,
+    $syllabusid = 0, $viewercontextorid = 0) {
+
+    global $DB;
+
+    if (empty($syllabusid)) {
+        $syllabus = $DB->get_record('course_modules', array('id' => $syllabuscmid), 'id, instance', MUST_EXIST);
+        $syllabusid = $syllabus->instance;
+    }
+
+    if (empty($viewercontextorid)) {
+        $viewer = $DB->get_record('course_modules', array('id' => $viewercmid), 'id, course, instance', MUST_EXIST);
+        $viewercontext = \context_module::instance($viewercmid);
+        $vconid = $viewercontext->id;
+    } else {
+        if (is_object($viewercontextorid)) {
+            $vconid = $viewercontextorid->id;
+        } else {
+            $vconid = $viewercontextorid;
+        }
+    }
+
+    if (empty($viewercourseconorid)) {
+        if (!isset($viewer)) {
+            $viewer = $DB->get_record('course_modules', array('id' => $viewercmid), 'id, course, instance', MUST_EXIST);
+        }
+        $viewercoursecon = \context_course::instance($viewer->course);
+        $vcourseconid = $viewercoursecon->id;
+    } else {
+        if (is_object($viewercourseconorid)) {
+            $vcourseconid = $viewercourseconorid->id;
+        } else {
+            $vcourseconid = $viewercourseconorid;
+        }
+    }
+
+    $syllabuscon = \context_module::instance($syllabuscmid);
+    $syllabuscoursecon = $syllabuscon->get_course_context();
+
+    $entry              = new stdClass();
+    $entry->cmid        = $viewercmid;
+    $entry->syllabusid  = $syllabusid;
+    $entry->courseid    = $syllabuscoursecon->instanceid;
+
+    $fs = get_file_storage();
+    $files = $fs->get_area_files($syllabuscon->id, 'mod_syllabus', 'content', 0,
+        'sortorder DESC, id ASC', false);
+
+    $filerec = array('contextid' => $vconid, 'component' => 'mod_syllabusviewer', 'filearea' => 'content');
+
+    foreach ($files as $file) {
+
+        // Only call create_file_from_storedfile if it doesn't exist.
+        if (!$fs->file_exists($vcourseconid, 'mod_syllabusviewer',
+            'content', 0, '/', $file->get_filename())) {
+            $newfile = $fs->create_file_from_storedfile($filerec, $file);
+            $entry->pathnamehash = $newfile->get_pathnamehash();
+            $entry->timemodified = $newfile->get_timemodified();
+        } else {
+            $newfile = $fs->get_file($vcourseconid, 'mod_syllabusviewer',
+                'content', 0, '/', $file->get_filename());
+            $entry->pathnamehash = $newfile->get_pathnamehash();
+            $entry->timemodified = $newfile->get_timemodified();
+        }
+        $DB->insert_record('syllabusviewer_entries', $entry);
+    }
+}
