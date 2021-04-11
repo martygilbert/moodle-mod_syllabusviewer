@@ -28,6 +28,16 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/mod/syllabusviewer/locallib.php');
 
 class mod_syllabusviewer_observer {
+    public static function course_deleted(\core\event\course_deleted $event) {
+        // If a course is a deleted, it first deletes all of the modules in the course
+        // (which would trigger event syllabus_updated()). That method ensures that a NULL
+        // entry is in the sv_entries table if a file is removed, to show that the course
+        // has no syllabus. Now that the course is being deleted, we need to remove all of
+        // those NULL entries, too, as the course is no longer tracked.
+        global $DB;
+
+        $DB->delete_records('syllabusviewer_entries', array('courseid' => $event->courseid));
+    }
 
     public static function syllabus_updated(\mod_syllabus\event\course_module_updated $event) {
     }
