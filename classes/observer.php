@@ -28,6 +28,44 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/mod/syllabusviewer/locallib.php');
 
 class mod_syllabusviewer_observer {
+    public static function course_created(\core\event\course_created $event) {
+        // What happens when a new course is created?
+        // First, if there is no SV, return.
+        // Then, if the course doesn't exist, return
+        // Then checked to see if this course is in a category that is being
+        // tracked by a SV. If so, add a NULL entry in sv_entries. 
+        // If not, ignore it.
+        global $DB;
+
+        $viewers = $DB->get_records('syllabusviewer');
+        if (!$viewers) {
+            return;
+        }
+
+        $course = $DB->get_record('course', array('id' => $event->courseid), 'id,category', MUST_EXIST);
+        if (!$course) {
+            return;
+        }
+
+        $cat = \core_course_category::get($course->category);
+        $parents = $cat->get_parents();
+
+        $toinsert = new stdClass();
+        $toinsert->courseid = $course->id;
+        foreach ($viewers as $viewer) {
+            // Does this viewer track this category?
+            if ($viewer->categoryid == 0 ||
+                $viewer->categoryid == $course->category ||
+                in_array($viewer->categoryid, $parents)) {
+
+                $cm = $DB->get_record('course_modules', array('instance' => $viewer->id), 'id', MUST_EXIST);
+                $toinsert->cmid = $cm->id;
+
+                $DB->insert_record('syllabusviewer_entries', $toinsert);
+            }
+        }
+    }
+
     public static function course_deleted(\core\event\course_deleted $event) {
         // If a course is a deleted, it first deletes all of the modules in the course
         // (which would trigger event syllabus_updated()). That method ensures that a NULL

@@ -42,4 +42,8 @@ $observers = array(
         'eventname' => '\core\event\course_deleted',
         'callback' => 'mod_syllabusviewer_observer::course_deleted',
     ),
+    array(
+        'eventname' => '\core\event\course_created',
+        'callback' => 'mod_syllabusviewer_observer::course_created',
+    ),
 );
