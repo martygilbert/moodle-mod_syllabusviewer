@@ -69,6 +69,9 @@ class mod_syllabusviewer_mod_form extends moodleform_mod {
         // Adding the standard "name" field.
         // Get the categories for a dropdown.
         global $DB;
+
+        $viewer = $DB->get_record('syllabusviewer', ['id' => $this->_instance],'id, frozen');
+
         $categories = $DB->get_records('course_categories', null, '', 'id');
 
         $options = array();
@@ -78,7 +81,26 @@ class mod_syllabusviewer_mod_form extends moodleform_mod {
             $options[$cat->id] = $category->get_nested_name(false);
         }
 
-        $mform->addElement('select', 'categoryid', get_string('categoryid_desc', 'mod_syllabusviewer'), $options);
+        if (!$viewer) {
+            // This is the first time the viewer has been added.
+            $mform->addElement('select', 'categoryid', get_string('categoryid_desc', 'mod_syllabusviewer'), $options);
+        } else {
+            $attributes['disabled'] = 'disabled';
+            $mform->addElement('select', 'categoryid', get_string('categoryid_desc', 'mod_syllabusviewer'), $options, $attributes);
+            
+
+            // The viewer exists and has settings.
+            if ($viewer->frozen == 1) {
+                $mform->addElement('checkbox', 'frozen', 'Freeze viewer', 'Viewer is frozen and will no longer receive updates.',
+                    ['disabled' => 'disabled']);
+                $mform->addElement('hidden', 'wasfrozen', '1');
+            } else {
+                $mform->addElement('checkbox', 'frozen', 'Freeze viewer', 
+                    'Freeze this viewer from receiving updates. Cannot be undone.');
+                $mform->addElement('hidden', 'wasfrozen', '0');
+            }
+            $mform->setType('wasfrozen', PARAM_INT);
+        }
 
         // Add standard elements.
         $this->standard_coursemodule_elements();

@@ -28,6 +28,7 @@ require_once("$CFG->libdir/filelib.php");
 /**
  * Delete a syllabus from syllabus_entries and any related files from sv  If there are no
  * other syllabus entries with this courseid, then make one with NULL values.
+ * Respects the 'frozen' config value of each viewer
  * @param syllbusid int id of syllabus to delete
  */
 function delete_syllabus($syllabusid) {
@@ -39,11 +40,16 @@ function delete_syllabus($syllabusid) {
         return;
     }
 
-    // Delete the syllabus entries - they're gone.
-    $DB->delete_records('syllabusviewer_entries', array('syllabusid' => $syllabusid));
-
     // Delete the associated files, if any.
     foreach ($entries as $thisentry) {
+
+        if (is_frozen($thisentry->cmid)) {
+            mtrace("Not deleting syllabus $thisentry->syllabusid due to the 'frozen' flag");
+            continue;
+        }
+
+        // Delete the syllabus entry - it's gone.
+        $DB->delete_records('syllabusviewer_entries', ['syllabusid' => $syllabusid, 'cmid' => $thisentry->cmid]);
         if (!is_null($thisentry->pathnamehash)) {
 
             // Count with this pathnamehash should == 0 to proceed with file deletion.
@@ -82,6 +88,7 @@ function delete_syllabus($syllabusid) {
 /**
  * syllabusid instanceid of the syllabus activity
  * syllabuscmid cmid of the syllabus
+ * respects the 'frozen' flag of the viewer config
  */
 function add_syllabus_entry($syllabuscmid) {
     global $DB;
@@ -99,6 +106,11 @@ function add_syllabus_entry($syllabuscmid) {
             $coursecon = \context_course::instance($cm->course);
             $viewercon = \context_module::instance($entry->cmid);
 
+            if (is_frozen($entry->cmid)) {
+                error_log("Not adding this syllabus entry due to 'frozen' flag");
+                continue;
+            }
+
             if (is_null($entry->syllabusid)) {
                 $DB->delete_records('syllabusviewer_entries', array('id' => $entry->id));
             }
@@ -108,6 +120,7 @@ function add_syllabus_entry($syllabuscmid) {
     }
 
 }
+
 
 function add_syllabus_files_to_viewer($syllabuscmid, $viewercmid, $viewercourseconorid = 0,
     $syllabusid = 0, $viewercontextorid = 0) {
@@ -175,4 +188,17 @@ function add_syllabus_files_to_viewer($syllabuscmid, $viewercmid, $viewercoursec
         }
         $DB->insert_record('syllabusviewer_entries', $entry);
     }
+}
+
+function is_frozen($cmid) {
+    global $DB;
+    $cm = $DB->get_record('course_modules', ['id' => $cmid], 'id, instance', MUST_EXIST);
+
+    $viewer = $DB->get_record('syllabusviewer', ['id' => $cm->instance], '*', MUST_EXIST);
+    
+    if ($viewer->frozen == 1) {
+        return true;
+    }
+    
+    return false;
 }

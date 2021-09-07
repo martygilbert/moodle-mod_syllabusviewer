@@ -84,6 +84,23 @@ function syllabusviewer_add_instance($moduleinstance, $mform = null) {
 function syllabusviewer_update_instance($moduleinstance, $mform = null) {
     global $DB;
 
+    // If is newly frozen, launch freeze_viewer task.
+    if (!empty($moduleinstance->frozen) && 
+        $moduleinstance->frozen == 1 &&
+        $moduleinstance->wasfrozen == 0) {
+
+        // Trigger the task to freeze the viewer.
+        $freezeviewer = new \mod_syllabusviewer\task\freeze_viewer();
+        $freezeviewer->set_custom_data([
+            'viewerid'  => $moduleinstance->instance,
+            'cmid'       => $moduleinstance->coursemodule,
+        ]);
+
+        \core\task\manager::queue_adhoc_task($freezeviewer);
+         
+    }
+
+
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
 

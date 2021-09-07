@@ -63,8 +63,11 @@ $PAGE->set_context($modulecontext);
 
 $output = $PAGE->get_renderer('mod_syllabusviewer');
 echo $output->header();
-echo $output->heading("This is my Page - output/heading");
-$renderable = new \mod_syllabusviewer\output\index_page($cm->instance, $cm->id);
+if ($moduleinstance->frozen == 0) {
+    $renderable = new \mod_syllabusviewer\output\index_page($cm->instance, $cm->id);
+} else {
+    $renderable = new \mod_syllabusviewer\output\frozen_index_page($cm->instance, $cm->id);
+}
 echo $output->render($renderable);
 
 echo $output->footer();

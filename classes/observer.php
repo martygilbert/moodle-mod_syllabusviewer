@@ -59,6 +59,11 @@ class mod_syllabusviewer_observer {
                 in_array($viewer->categoryid, $parents)) {
 
                 $cm = $DB->get_record('course_modules', array('instance' => $viewer->id), 'id', MUST_EXIST);
+                if (is_frozen($cm->id)) {
+                    error_log("not adding the blank entry for this new course because the viewer is 'frozen'");
+                    continue;
+                }
+
                 $toinsert->cmid = $cm->id;
 
                 $DB->insert_record('syllabusviewer_entries', $toinsert);
@@ -74,7 +79,20 @@ class mod_syllabusviewer_observer {
         // those NULL entries, too, as the course is no longer tracked.
         global $DB;
 
-        $DB->delete_records('syllabusviewer_entries', array('courseid' => $event->courseid));
+
+        // This is more complicated now with the 'frozen' flag. We must get all of the
+        // entires with this courseid, and delete them one-by-one **if** the frozen flag
+        // isn't set for this viewer cmid.
+
+        $entries = $DB->get_records('syllabusviewer_entries', ['courseid' => $event->courseid]);
+
+        foreach ($entries as $entry) {
+            if (!is_frozen($entry->cmid)) {
+                $DB->delete_records('syllabusviewer_entries', ['courseid' => $event->courseid, 'cmid' => $entry->cmid]);
+            } else {
+                error_log("Not deleting the records for this course b/c the viewer is frozen");
+            }
+        }
     }
 
     public static function syllabus_updated(\mod_syllabus\event\course_module_updated $event) {

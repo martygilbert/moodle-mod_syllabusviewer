@@ -53,7 +53,8 @@ class index_page implements renderable, templatable {
 
         $entries = $DB->get_records('syllabusviewer_entries', array('cmid' => $this->cmid));
 
-        $sql = "SELECT id,shortname FROM {course}
+        $sql = "SELECT id,shortname 
+                  FROM {course}
                  WHERE id IN (
                      SELECT DISTINCT courseid
                        FROM {syllabusviewer_entries}
