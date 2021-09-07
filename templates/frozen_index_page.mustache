@@ -1,0 +1,27 @@
+
+<div class="hero-unit">
+    <h2>{{catname}} - FROZEN</h3>
+
+    <table width="100%" style="empty-cells:show">
+        <tr>
+            <th>Course Shortname</th>
+            <th>Teacher(s)</th>
+            <th>File(s)</th>
+        </tr>
+        {{#courses}}
+            <tr>
+            <td>{{shortname}}</td>
+            <td>
+                {{teachers}}
+            </td>
+            <td>
+            {{#files}}
+                <a href="{{link}}">{{name}}</a><br>
+            {{/files}}
+            {{^files}}No file submitted{{/files}}
+            </td>
+            </tr>
+        {{/courses}}
+
+    </table>
+</div>
